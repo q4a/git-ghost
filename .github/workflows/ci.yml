@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, ci ]
     tags-ignore: [ "**" ]
     paths-ignore: [ "**.md"]
   pull_request:
@@ -37,3 +37,47 @@ jobs:
       uses: shogo82148/actions-goveralls@v1
       with:
         path-to-profile: profile.cov
+
+  linux-build:
+    name: Linux
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ~1.19
+    - name: Check out
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Get dependencies
+      run: go mod download
+    - name: Build
+      run: make build
+    - name: Upload artifact
+      uses: actions/upload-artifact@main
+      with:
+        name: linux
+        path: dist/*
+
+  windows-build:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ~1.19
+    - name: Check out
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Get dependencies
+      run: go mod download
+    - name: Build
+      run: make build
+    - name: Upload artifact
+      uses: actions/upload-artifact@main
+      with:
+        name: windows
+        path: dist/*
